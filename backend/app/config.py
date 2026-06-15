@@ -31,10 +31,6 @@ class Config:
         "https://dashscope.aliyuncs.com/api/v1",
     ).rstrip("/")
     FILE_ASR_MODEL = os.getenv("FILE_ASR_MODEL", "fun-asr")
-    REALTIME_ASR_MODEL = os.getenv(
-        "REALTIME_ASR_MODEL",
-        "paraformer-realtime-v2",
-    )
 
     ALLOWED_AUDIO_EXTENSIONS = {
         "m4a", "mp3", "wav", "flac", "ogg", "webm", "aac", "wma",

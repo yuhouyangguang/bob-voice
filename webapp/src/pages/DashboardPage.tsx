@@ -19,6 +19,7 @@ import {
   PlusOutlined,
   ReloadOutlined,
   AudioOutlined,
+  UploadOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   ExclamationCircleOutlined,
@@ -381,18 +382,11 @@ const DashboardPage: React.FC = () => {
         <Text style={{ color: '#a0a0c0', marginRight: 16 }}>快速操作：</Text>
         <Space wrap>
           <Button
-            icon={<AudioOutlined />}
+            icon={<UploadOutlined />}
             onClick={() => navigate('/record')}
             style={{ background: '#252545', borderColor: '#2e2e50', color: '#e8e8f0' }}
           >
             上传音频转写
-          </Button>
-          <Button
-            icon={<AudioOutlined />}
-            onClick={() => navigate('/record?tab=record')}
-            style={{ background: '#252545', borderColor: '#2e2e50', color: '#e8e8f0' }}
-          >
-            录音转写
           </Button>
         </Space>
       </Card>

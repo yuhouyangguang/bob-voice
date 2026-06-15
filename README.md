@@ -4,6 +4,11 @@
 
 仓库地址：<https://github.com/yuhouyangguang/bob-voice>
 
+## 分支说明
+
+- **`master`** — 当前主线，仅支持**上传音频文件**转写，已移除麦克风实时录音。
+- **`realtime-recording`** — 保留完整功能的快照分支，含浏览器麦克风录音与后端 `/realtime` 流式识别。
+
 ```bash
 git clone https://github.com/yuhouyangguang/bob-voice.git
 cd bob-voice

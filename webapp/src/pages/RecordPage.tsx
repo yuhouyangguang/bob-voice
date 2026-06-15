@@ -17,15 +17,10 @@ import {
   Row,
   Col,
   Divider,
-  Tabs,
   Tag,
 } from 'antd';
 import {
   UploadOutlined,
-  AudioOutlined,
-  PauseCircleOutlined,
-  StopOutlined,
-  DeleteOutlined,
   CheckCircleOutlined,
   ArrowLeftOutlined,
   ArrowRightOutlined,
@@ -38,7 +33,6 @@ import type { UploadFile } from 'antd/es/upload';
 import dayjs from 'dayjs';
 import { tasksApi } from '../api/tasks';
 import { useChunkedUpload } from '../hooks/useChunkedUpload';
-import { useMicRecorder } from '../hooks/useMicRecorder';
 import type { MeetingMeta, MeetingType } from '../types';
 import { MEETING_TYPE_LABELS } from '../types';
 
@@ -47,23 +41,15 @@ const { TextArea } = Input;
 
 const SMALL_FILE_THRESHOLD = 10 * 1024 * 1024; // 10 MB
 
-const formatDuration = (seconds: number): string => {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-};
-
 const RecordPage: React.FC = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [inputTab, setInputTab] = useState<'upload' | 'record'>('upload');
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm<MeetingMeta>();
 
   const { state: uploadState, startUpload } = useChunkedUpload();
-  const { state: recorderState, start, pause, resume, stop, reset: resetRecorder } = useMicRecorder();
 
   const handleFileSelect = useCallback(
     (file: File) => {
@@ -74,24 +60,7 @@ const RecordPage: React.FC = () => {
     []
   );
 
-  const handleRecordStop = useCallback(() => {
-    stop();
-  }, [stop]);
-
-  const handleUseRecording = useCallback(() => {
-    if (recorderState.audioBlob) {
-      const file = new File(
-        [recorderState.audioBlob],
-        `recording_${dayjs().format('YYYYMMDDHHmmss')}.webm`,
-        { type: recorderState.audioBlob.type }
-      );
-      setSelectedFile(file);
-      setInputTab('upload');
-    }
-  }, [recorderState.audioBlob]);
-
-  const canProceedStep1 =
-    inputTab === 'upload' ? !!selectedFile : !!recorderState.audioBlob;
+  const canProceedStep1 = !!selectedFile;
 
   const handleSubmit = async () => {
     try {
@@ -108,19 +77,10 @@ const RecordPage: React.FC = () => {
     setSubmitting(true);
 
     try {
-      let fileToUpload = selectedFile;
-
-      // If recording was used, convert blob to File
-      if (!fileToUpload && recorderState.audioBlob) {
-        fileToUpload = new File(
-          [recorderState.audioBlob],
-          `recording_${dayjs().format('YYYYMMDDHHmmss')}.webm`,
-          { type: recorderState.audioBlob.type }
-        );
-      }
+      const fileToUpload = selectedFile;
 
       if (!fileToUpload) {
-        message.error('请选择或录制音频文件');
+        message.error('请选择音频文件');
         setSubmitting(false);
         return;
       }
@@ -185,224 +145,68 @@ const RecordPage: React.FC = () => {
   };
 
   const steps = [
-    { title: '选择文件', description: '上传或录制音频' },
+    { title: '选择文件', description: '上传音频文件' },
     { title: '填写信息', description: '会议基本信息' },
     { title: '提交转写', description: '确认并提交' },
   ];
 
   const renderStep1 = () => (
-    <div>
-      <Tabs
-        activeKey={inputTab}
-        onChange={(key) => setInputTab(key as 'upload' | 'record')}
-        items={[
-          {
-            key: 'upload',
-            label: (
-              <span>
-                <UploadOutlined /> 上传文件
-              </span>
-            ),
-            children: (
-              <div style={{ padding: '16px 0' }}>
-                <Upload.Dragger
-                  accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.webm,.mp4,.mov"
-                  beforeUpload={handleFileSelect}
-                  fileList={fileList}
-                  onRemove={() => {
-                    setSelectedFile(null);
-                    setFileList([]);
-                  }}
-                  onChange={({ fileList: fl }) => setFileList(fl)}
-                  maxCount={1}
-                  style={{
-                    background: '#252545',
-                    border: '2px dashed #2e2e50',
-                    borderRadius: 8,
-                    padding: 24,
-                  }}
-                >
-                  <p style={{ fontSize: 48, color: '#C41230' }}>
-                    <UploadOutlined />
-                  </p>
-                  <p style={{ color: '#e8e8f0', fontSize: 16, marginBottom: 8 }}>
-                    点击或拖拽文件到此区域
-                  </p>
-                  <p style={{ color: '#6b6b8f', fontSize: 13 }}>
-                    支持 MP3、WAV、M4A、AAC、OGG、FLAC、WEBM、MP4、MOV
-                  </p>
-                  <p style={{ color: '#6b6b8f', fontSize: 12, marginTop: 8 }}>
-                    小于10MB直接上传，大于10MB自动分片上传
-                  </p>
-                </Upload.Dragger>
+    <div style={{ padding: '16px 0' }}>
+      <Upload.Dragger
+        accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.webm,.mp4,.mov"
+        beforeUpload={handleFileSelect}
+        fileList={fileList}
+        onRemove={() => {
+          setSelectedFile(null);
+          setFileList([]);
+        }}
+        onChange={({ fileList: fl }) => setFileList(fl)}
+        maxCount={1}
+        style={{
+          background: '#252545',
+          border: '2px dashed #2e2e50',
+          borderRadius: 8,
+          padding: 24,
+        }}
+      >
+        <p style={{ fontSize: 48, color: '#C41230' }}>
+          <UploadOutlined />
+        </p>
+        <p style={{ color: '#e8e8f0', fontSize: 16, marginBottom: 8 }}>
+          点击或拖拽文件到此区域
+        </p>
+        <p style={{ color: '#6b6b8f', fontSize: 13 }}>
+          支持 MP3、WAV、M4A、AAC、OGG、FLAC、WEBM、MP4、MOV
+        </p>
+        <p style={{ color: '#6b6b8f', fontSize: 12, marginTop: 8 }}>
+          小于10MB直接上传，大于10MB自动分片上传
+        </p>
+      </Upload.Dragger>
 
-                {selectedFile && (
-                  <Alert
-                    type="success"
-                    icon={<CheckCircleOutlined />}
-                    showIcon
-                    message={
-                      <span>
-                        已选择：<strong>{selectedFile.name}</strong>
-                        {'  '}
-                        <Tag color="blue">
-                          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                        </Tag>
-                      </span>
-                    }
-                    style={{ marginTop: 16 }}
-                  />
-                )}
+      {selectedFile && (
+        <Alert
+          type="success"
+          icon={<CheckCircleOutlined />}
+          showIcon
+          message={
+            <span>
+              已选择：<strong>{selectedFile.name}</strong>
+              {'  '}
+              <Tag color="blue">
+                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+              </Tag>
+            </span>
+          }
+          style={{ marginTop: 16 }}
+        />
+      )}
 
-                {uploadState.uploading && (
-                  <div style={{ marginTop: 16 }}>
-                    <Text style={{ color: '#a0a0c0' }}>分片上传中...</Text>
-                    <Progress percent={uploadState.progress} strokeColor="#C41230" />
-                  </div>
-                )}
-              </div>
-            ),
-          },
-          {
-            key: 'record',
-            label: (
-              <span>
-                <AudioOutlined /> 录音
-              </span>
-            ),
-            children: (
-              <div style={{ padding: '24px 0', textAlign: 'center' }}>
-                {recorderState.error && (
-                  <Alert type="error" message={recorderState.error} style={{ marginBottom: 16 }} />
-                )}
-
-                <div
-                  style={{
-                    width: 120,
-                    height: 120,
-                    borderRadius: '50%',
-                    background:
-                      recorderState.recordingState === 'recording'
-                        ? 'radial-gradient(circle, rgba(196,18,48,0.3) 0%, rgba(196,18,48,0.1) 70%)'
-                        : '#252545',
-                    border: `3px solid ${
-                      recorderState.recordingState === 'recording' ? '#C41230' : '#2e2e50'
-                    }`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 24px',
-                    transition: 'all 0.3s',
-                    animation:
-                      recorderState.recordingState === 'recording'
-                        ? 'pulse 1.5s infinite'
-                        : 'none',
-                  }}
-                >
-                  <AudioOutlined
-                    style={{
-                      fontSize: 40,
-                      color:
-                        recorderState.recordingState === 'recording' ? '#C41230' : '#4a4a6a',
-                    }}
-                  />
-                </div>
-
-                <Title level={3} style={{ color: '#e8e8f0', marginBottom: 8 }}>
-                  {formatDuration(recorderState.duration)}
-                </Title>
-
-                <Text style={{ color: '#6b6b8f', display: 'block', marginBottom: 24 }}>
-                  {recorderState.recordingState === 'idle' && '点击开始录音'}
-                  {recorderState.recordingState === 'recording' && '录音中...'}
-                  {recorderState.recordingState === 'paused' && '已暂停'}
-                  {recorderState.recordingState === 'stopped' && '录音完成'}
-                </Text>
-
-                <Space size={12}>
-                  {recorderState.recordingState === 'idle' && (
-                    <Button
-                      type="primary"
-                      icon={<AudioOutlined />}
-                      size="large"
-                      onClick={start}
-                      style={{ background: '#C41230', borderColor: '#C41230' }}
-                    >
-                      开始录音
-                    </Button>
-                  )}
-
-                  {recorderState.recordingState === 'recording' && (
-                    <>
-                      <Button
-                        icon={<PauseCircleOutlined />}
-                        size="large"
-                        onClick={pause}
-                        style={{ background: '#252545', borderColor: '#2e2e50', color: '#e8e8f0' }}
-                      >
-                        暂停
-                      </Button>
-                      <Button
-                        danger
-                        icon={<StopOutlined />}
-                        size="large"
-                        onClick={handleRecordStop}
-                      >
-                        停止
-                      </Button>
-                    </>
-                  )}
-
-                  {recorderState.recordingState === 'paused' && (
-                    <>
-                      <Button
-                        type="primary"
-                        icon={<AudioOutlined />}
-                        size="large"
-                        onClick={resume}
-                        style={{ background: '#C41230', borderColor: '#C41230' }}
-                      >
-                        继续
-                      </Button>
-                      <Button
-                        danger
-                        icon={<StopOutlined />}
-                        size="large"
-                        onClick={handleRecordStop}
-                      >
-                        停止
-                      </Button>
-                    </>
-                  )}
-
-                  {recorderState.recordingState === 'stopped' && recorderState.audioUrl && (
-                    <>
-                      <audio controls src={recorderState.audioUrl} style={{ marginRight: 12 }} />
-                      <Button
-                        type="primary"
-                        icon={<CheckCircleOutlined />}
-                        size="large"
-                        onClick={handleUseRecording}
-                        style={{ background: '#52c41a', borderColor: '#52c41a' }}
-                      >
-                        使用此录音
-                      </Button>
-                      <Button
-                        icon={<DeleteOutlined />}
-                        size="large"
-                        onClick={resetRecorder}
-                        style={{ background: '#252545', borderColor: '#2e2e50', color: '#e8e8f0' }}
-                      >
-                        重新录制
-                      </Button>
-                    </>
-                  )}
-                </Space>
-              </div>
-            ),
-          },
-        ]}
-      />
+      {uploadState.uploading && (
+        <div style={{ marginTop: 16 }}>
+          <Text style={{ color: '#a0a0c0' }}>分片上传中...</Text>
+          <Progress percent={uploadState.progress} strokeColor="#C41230" />
+        </div>
+      )}
     </div>
   );
 
@@ -602,17 +406,13 @@ const RecordPage: React.FC = () => {
           <Row gutter={[16, 12]}>
             <Col xs={24} sm={12}>
               <Text style={{ color: '#6b6b8f' }}>文件名称：</Text>
-              <Text style={{ color: '#e8e8f0' }}>
-                {selectedFile?.name ?? recorderState.audioBlob ? '录音文件' : '未选择'}
-              </Text>
+              <Text style={{ color: '#e8e8f0' }}>{selectedFile?.name ?? '未选择'}</Text>
             </Col>
             <Col xs={24} sm={12}>
               <Text style={{ color: '#6b6b8f' }}>文件大小：</Text>
               <Text style={{ color: '#e8e8f0' }}>
                 {selectedFile
                   ? `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`
-                  : recorderState.audioBlob
-                  ? `${(recorderState.audioBlob.size / 1024 / 1024).toFixed(2)} MB`
                   : '—'}
               </Text>
             </Col>
@@ -673,7 +473,7 @@ const RecordPage: React.FC = () => {
         <Title level={4} style={{ color: '#e8e8f0', margin: 0 }}>
           新建转写任务
         </Title>
-        <Text style={{ color: '#6b6b8f' }}>上传或录制音频，填写会议信息后提交转写</Text>
+        <Text style={{ color: '#6b6b8f' }}>上传音频文件，填写会议信息后提交转写</Text>
       </div>
 
       <Card
