@@ -1,0 +1,232 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #1a1a2e;
+  color: #e8e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+/* Dark scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3a3a5c;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5a5a7c;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3a3a5c #1a1a2e;
+}
+
+/* Ant Design overrides for dark theme */
+.ant-layout {
+  background: #1a1a2e !important;
+}
+
+.ant-layout-sider {
+  background: #12122a !important;
+}
+
+.ant-table-wrapper .ant-table {
+  background: #1e1e36;
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  background: #12122a;
+  color: #e8e8f0;
+  border-bottom-color: #2a2a4a;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom-color: #2a2a4a;
+  color: #e8e8f0;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr:hover > td {
+  background: #2a2a4a !important;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
+  background: #2a2a50 !important;
+}
+
+/* Progress bar */
+.ant-progress-bg {
+  background: #C41230 !important;
+}
+
+/* Tags */
+.status-tag {
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 1px 8px;
+}
+
+/* Upload drag area */
+.ant-upload-drag {
+  background: #1e1e36 !important;
+  border-color: #3a3a5c !important;
+}
+
+.ant-upload-drag:hover {
+  border-color: #C41230 !important;
+}
+
+/* Modal */
+.ant-modal-content {
+  background: #1e1e36 !important;
+}
+
+.ant-modal-header {
+  background: #1e1e36 !important;
+}
+
+/* Select dropdown */
+.ant-select-dropdown {
+  background: #1e1e36 !important;
+}
+
+/* DatePicker */
+.ant-picker-dropdown {
+  background: #1e1e36 !important;
+}
+
+/* Transcript segment hover */
+.segment-row {
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.segment-row:hover {
+  background: #2a2a4a;
+}
+
+.segment-row.editing {
+  background: #2a2a4a;
+  border: 1px solid #C41230;
+}
+
+/* Audio waveform placeholder */
+.audio-waveform {
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(to bottom, #1e1e36, #12122a);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b6b8f;
+}
+
+/* ── Mobile Responsive ──────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Ant Card body padding */
+  .ant-card .ant-card-body {
+    padding: 12px !important;
+  }
+
+  .ant-card .ant-card-head {
+    padding: 0 12px !important;
+    min-height: 40px !important;
+  }
+
+  /* Card title actions: allow wrapping */
+  .ant-card .ant-card-head .ant-card-extra {
+    width: 100%;
+    margin-left: 0;
+    padding: 8px 0;
+  }
+
+  /* Table: smaller font, tighter cells */
+  .ant-table {
+    font-size: 13px;
+  }
+
+  .ant-table-wrapper .ant-table-thead > tr > th,
+  .ant-table-wrapper .ant-table-tbody > tr > td {
+    padding: 8px 6px !important;
+  }
+
+  /* Statistic cards */
+  .ant-statistic .ant-statistic-title {
+    font-size: 12px !important;
+  }
+
+  .ant-statistic .ant-statistic-content {
+    font-size: 20px !important;
+  }
+
+  /* Steps: compact */
+  .ant-steps {
+    font-size: 12px;
+  }
+
+  .ant-steps .ant-steps-item-title {
+    font-size: 13px !important;
+  }
+
+  .ant-steps .ant-steps-item-description {
+    display: none !important;
+  }
+
+  /* Modal: full width on mobile */
+  .ant-modal {
+    max-width: calc(100vw - 24px) !important;
+    margin: 12px auto !important;
+  }
+
+  /* Drawer: narrower on mobile */
+  .ant-drawer .ant-drawer-content-wrapper {
+    max-width: 85vw !important;
+  }
+
+  /* Pagination: compact */
+  .ant-pagination-item,
+  .ant-pagination-prev,
+  .ant-pagination-next {
+    min-width: 28px !important;
+    height: 28px !important;
+    line-height: 28px !important;
+  }
+
+  /* Segment row: tighter on mobile */
+  .segment-row {
+    padding: 6px 8px;
+  }
+
+  /* Timestamp in transcript: hide on very small screens */
+  .segment-row > div > span:first-child {
+    font-size: 10px;
+    min-width: 60px !important;
+  }
+}

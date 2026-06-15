@@ -1,0 +1,16 @@
+# 环境密钥
+.env
+
+# Python
+**/__pycache__/
+*.pyc
+**/.pytest_cache/
+backend/instance/
+
+# Node / 前端构建产物
+webapp/node_modules/
+webapp/dist/
+webapp/.pids/
+
+# 系统垃圾
+**/.DS_Store

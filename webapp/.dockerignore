@@ -1,0 +1,6 @@
+node_modules
+dist
+.pids
+*.log
+.git
+.vscode
